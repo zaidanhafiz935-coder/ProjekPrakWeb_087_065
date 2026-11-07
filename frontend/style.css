@@ -14,14 +14,22 @@ body {
     justify-content: space-between;
     align-items: center;
     background-color: #333;
-    padding: 15px 30px;
+    padding: 6px 30px;
     color: white;
     position: relative; /* KUNCI: Supaya .isi-menu posisinya pas di bawah navbar */
 }
 
-.logo {
+.brand {
     font-size: 20px;
     font-weight: bold;
+    align-items: center;
+
+  display: flex;
+}
+.brand-text{
+    font-weight: bold;     
+  color: white;
+  font-size: 30px;   
 }
 
 /* Bagian Tombol Login & Hamburger */
@@ -104,3 +112,11 @@ body {
     pointer-events: auto;
     transform: translateY(0); /* Kembali ke posisi normal */
 }
+.logo{
+       height: 120px ;  
+    width: auto ;
+    margin-top: -30px ;  
+    margin-bottom: -30px ; 
+    display: block;
+}
+
