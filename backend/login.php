@@ -1,29 +1,76 @@
 <?php
-
 session_start();
 
-require_once "../config/database.php";
+require "koneksi.php";
 
-$username = $_POST['username'];
-$password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
 
-// Contoh sederhana
-$query = mysqli_query(
-    $conn,
-    "SELECT * FROM users WHERE username='$username'"
-);
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-$user = mysqli_fetch_assoc($query);
+    // Mencari user berdasarkan email
+    $stmt = $koneksi->prepare(
+        "SELECT username, password FROM users WHERE email = ?"
+    );
 
-if ($user && password_verify($password, $user['password'])) {
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
 
-    $_SESSION['username'] = $user['username'];
+    $result = $stmt->get_result();
 
-    header("Location: ../dashboard.php");
-    exit;
+    if ($result->num_rows === 1) {
 
-} else {
+        $row = $result->fetch_assoc();
 
-    echo "Username atau password salah";
+        // Memverifikasi password
+        if (password_verify($password, $row['password'])) {
 
+            $_SESSION['username'] = $row['username'];
+            $_SESSION['email'] = $email;
+
+            // Redirect ke dashboard
+            header("Location: ../dashboard.php");
+            exit;
+
+        } else {
+            echo "Password salah!";
+        }
+
+    } else {
+        echo "Email tidak ditemukan!";
+    }
+
+    $stmt->close();
 }
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+
+    <h2>Login</h2>
+
+    <form action="login.php" method="POST">
+
+        <label>Email:</label>
+        <br>
+        <input type="email" name="email" required>
+        <br><br>
+
+        <label>Password:</label>
+        <br>
+        <input type="password" name="password" required>
+        <br><br>
+
+        <button type="submit">Login</button>
+
+    </form>
+
+</body>
+</html>
