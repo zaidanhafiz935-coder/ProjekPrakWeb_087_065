@@ -1,38 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaporPak</title>
+    <title>LaporPak - Platform Layanan Publik Digital</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
-  <nav class="navbar">
-    <!-- logo nih boss -->
-    <div class="brand">
-        <img src="download.png"alt="logo" class="logo">
-        <span class="brand-text">LaporPak</span>
-    </div>
 
-    
-    <div class="nav-actions">
-        <button class="tombol-login">Login</button>
-        
-        
-        <button class="hamburger-menu" id="tombolHamburger">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </button>
-    </div>
-    <ul class="isi-menu" id="menuLapor">
-        <li><a href="#">p</a></li>
-        <li><a href="#">p</a></li>
-        <li><a href="#">p</a></li>
-        <li><a href="#">Tentang Kami</a></li>
-    </ul>
-</nav>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="brand">
+            <img src="download.png" alt="logo" class="logo">
+            <span class="brand-text">LaporPak</span>
+        </div>
+
+        <!-- Menu Desktop -->
+        <ul class="nav-links">
+            <li><a href="#" class="active">Beranda</a></li>
+            <li><a href="#">Lapor Masalah</a></li>
+            <li><a href="#">Peta Laporan</a></li>
+            <li><a href="#">Kegiatan Sosial</a></li>
+        </ul>
+
+        <!-- Tombol Aksi -->
+        <div class="nav-actions">
+            <a href="login.php" class="btn btn-login">Login</a>
+            <a href="register.php" class="btn btn-daftar">Daftar</a>
+
+            <!-- Tombol Hamburger (HP) -->
+            <button class="hamburger-menu" id="tombolHamburger" aria-label="Menu Mobile">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+
+        <!-- Menu Dropdown Mobile -->
+        <ul class="isi-menu" id="menuLapor">
+            <li><a href="#">Beranda</a></li>
+            <li><a href="#">Lapor Masalah</a></li>
+            <li><a href="#">Peta Laporan</a></li>
+            <li><a href="#">Kegiatan Sosial</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <!-- Overlay Dekorasi Background Grafik -->
+        <div class="bg-shape circle-1"></div>
+        <div class="bg-shape circle-2"></div>
+
+        <div class="hero-container">
+            <!-- Teks Kiri -->
+            <div class="hero-text">
+                <div class="badge">Platform Layanan Publik Digital</div>
+                <h1>Laporkan Masalah,<br>Wujudkan Lingkungan<br>Lebih Baik</h1>
+                <p>
+                    LaporPak memudahkan Anda melaporkan masalah lingkungan dan fasilitas umum, 
+                    memantau proses penanganannya secara transparan, serta berpartisipasi 
+                    dalam kegiatan sosial untuk membangun lingkungan yang lebih bersih dan aman.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">+ Buat Laporan</a>
+                    <a href="#" class="btn btn-outline">Lihat Peta Laporan</a>
+                </div>
+            </div>
+
+            <!-- Carousel Kanan -->
+            <div class="hero-visual">
+                <div class="carousel-container" id="carouselContainer">
+                    <button class="nav-btn prev-btn" id="prevBtn" aria-label="Sebelumnya">&#10094;</button>
+
+                    <div class="carousel-track" id="track">
+                        <div class="carousel-slide">
+                            <img src="dummytest.jpg" alt="Foto 1">
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="dummytest.jpg" alt="Foto 2">
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="dummytest.jpg" alt="Foto 3">
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="dummytest.jpg" alt="Foto 4">
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="dummytest.jpg" alt="Foto 5">
+                        </div>
+                    </div>
+
+                    <button class="nav-btn next-btn" id="nextBtn" aria-label="Berikutnya">&#10095;</button>
+                </div>
+            </div>
+        </div>
+    </section>
 
 </body>
 </html>
