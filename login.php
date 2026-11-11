@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require "koneksi.php";
+require_once __DIR__ . "/config/koneksi.php";
 
 $error = "";
 $email = "";
@@ -9,12 +9,12 @@ $email = "";
 // Jika form login dikirim
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    // Mencari user berdasarkan email
+    // Cari akun berdasarkan email
     $stmt = $koneksi->prepare(
-        "SELECT username, email, password FROM users WHERE email = ?"
+        "SELECT id, nama, email, password, role, status_akun FROM users WHERE email = ?"
     );
 
     $stmt->bind_param("s", $email);
@@ -26,17 +26,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $row = $result->fetch_assoc();
 
-        // Memverifikasi password
-        if (password_verify($password, $row['password'])) {
+        if (
+            password_verify($password, $row['password']) &&
+            $row['status_akun'] === 'aktif' &&
+            in_array($row['role'], ['admin', 'warga'], true)
+        ) {
 
-            // Membuat session
             session_regenerate_id(true);
 
-            $_SESSION['username'] = $row['username'];
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['username'] = $row['nama'];
             $_SESSION['email'] = $row['email'];
+            $_SESSION['role'] = $row['role'];
 
-            // Redirect ke dashboard
-            header("Location: ../dashboard.php");
+            $destination = $row['role'] === 'admin'
+                ? 'admin/dashboard.php'
+                : 'frontend/index.html';
+            header("Location: " . $destination);
             exit;
 
         } else {
@@ -65,55 +71,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
 </head>
 
 <body class="bg-light">
 
     <div class="container py-5">
-
         <div class="row justify-content-center">
             <div class="col-lg-5 col-md-7">
 
                 <!-- Brand -->
                 <div class="text-center mb-4">
-
                     <a href="../index.php" class="text-decoration-none">
-
                         <i class="bi bi-shield-check-fill fs-1 text-primary"></i>
-
                         <h4 class="fw-bold text-primary mt-2">
                             Siaga Masyarakat
                         </h4>
-
                     </a>
-
                     <p class="text-muted small">
                         Masuk ke akun Anda untuk mulai melaporkan masalah
                     </p>
-
                 </div>
 
                 <!-- Login Card -->
                 <div class="card border-0 shadow">
 
                     <div class="card-header bg-primary text-white py-3">
-
                         <i class="bi bi-box-arrow-in-right me-2"></i>
                         Masuk ke Akun
-
                     </div>
 
                     <div class="card-body p-4">
 
                         <!-- Error Message -->
                         <?php if (!empty($error)): ?>
-
                             <div class="alert alert-danger">
                                 <i class="bi bi-exclamation-triangle me-2"></i>
                                 <?= htmlspecialchars($error) ?>
                             </div>
-
                         <?php endif; ?>
 
                         <!-- Login Form -->
@@ -121,17 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                             <!-- Email -->
                             <div class="mb-3">
-
                                 <label for="email" class="form-label">
                                     Alamat Email
                                 </label>
-
                                 <div class="input-group">
-
                                     <span class="input-group-text">
                                         <i class="bi bi-envelope"></i>
                                     </span>
-
                                     <input
                                         type="email"
                                         id="email"
@@ -141,24 +131,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         value="<?= htmlspecialchars($email) ?>"
                                         required
                                     >
-
                                 </div>
-
                             </div>
 
                             <!-- Password -->
                             <div class="mb-4">
-
                                 <label for="password" class="form-label">
                                     Password
                                 </label>
-
                                 <div class="input-group">
-
                                     <span class="input-group-text">
                                         <i class="bi bi-lock"></i>
                                     </span>
-
                                     <input
                                         type="password"
                                         id="password"
@@ -167,7 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         placeholder="Masukkan password"
                                         required
                                     >
-
                                     <button
                                         class="btn btn-outline-secondary"
                                         type="button"
@@ -175,55 +158,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     >
                                         <i class="bi bi-eye" id="eye-icon"></i>
                                     </button>
-
                                 </div>
-
                             </div>
 
                             <!-- Login Button -->
                             <div class="d-grid">
-
                                 <button type="submit" class="btn btn-primary btn-lg fw-semibold">
-
                                     <i class="bi bi-box-arrow-in-right me-2"></i>
                                     Login
-
                                 </button>
-
                             </div>
 
                         </form>
+
+                        <!-- Demo credentials -->
+                        <div class="mt-4 p-3 bg-light rounded border small">
+                            <div class="fw-semibold text-muted mb-1">
+                                <i class="bi bi-info-circle me-1"></i>Akun Demo:
+                            </div>
+                            <table class="w-100 mb-1">
+                                <tr>
+                                    <td class="text-muted pe-2">Admin:</td>
+                                    <td><code>admin@siagamasyarakat.id</code></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted pe-2">Warga:</td>
+                                    <td><code>budi@email.com</code></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted pe-2">Password:</td>
+                                    <td><code>Admin123!</code></td>
+                                </tr>
+                            </table>
+                        </div>
 
                     </div>
 
                     <!-- Register Link -->
                     <div class="card-footer text-center text-muted small py-3">
-
                         Belum punya akun?
-
                         <a href="register.php" class="text-primary fw-semibold text-decoration-none">
                             Daftar sekarang
                         </a>
-
                     </div>
 
                 </div>
 
                 <!-- Back to Home -->
                 <div class="text-center mt-3">
-
                     <a href="../index.php" class="text-muted text-decoration-none small">
-
                         <i class="bi bi-arrow-left me-1"></i>
                         Kembali ke Beranda
-
                     </a>
-
                 </div>
 
             </div>
         </div>
-
     </div>
 
     <!-- Bootstrap JS -->
@@ -231,28 +221,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Show / Hide Password -->
     <script>
-
         function togglePassword() {
-
             const password = document.getElementById("password");
             const icon = document.getElementById("eye-icon");
 
             if (password.type === "password") {
-
                 password.type = "text";
                 icon.className = "bi bi-eye-slash";
-
             } else {
-
                 password.type = "password";
                 icon.className = "bi bi-eye";
-
             }
-
         }
-        // Email    : tester@siaga.test
-        // Password : Password123!
-
     </script>
 
 </body>
