@@ -1,7 +1,7 @@
 <?php
 include "backend/koneksi.php";
 $query = mysqli_query($conn, "SELECT * FROM ");
-hile($data = mysqli_fetch_array($query)){
+while($data = mysqli_fetch_array($query)){
 ?>
 <?php } ?>
 <!DOCTYPE html>

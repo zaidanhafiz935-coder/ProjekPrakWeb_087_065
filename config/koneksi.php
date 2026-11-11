@@ -7,7 +7,7 @@
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'testlogin');
+define('DB_NAME', 'siaga_masyarakat');
 
 // ======================================
 // DATABASE CONNECTION
@@ -29,6 +29,9 @@ if ($koneksi->connect_error) {
             <p>Sistem tidak dapat terhubung ke database. Silakan hubungi administrator.</p>
          </div>');
 }
+
+$conn = $koneksi;
+$koneksi->set_charset('utf8mb4');
 
 define('BASE_URL',        'http://localhost/siaga-masyarakat');
 define('UPLOAD_REPORTS',  __DIR__ . '/../uploads/reports/');

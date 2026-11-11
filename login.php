@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require "koneksi.php";
+require_once __DIR__ . "/koneksi.php";
 
 $error = "";
 $email = "";

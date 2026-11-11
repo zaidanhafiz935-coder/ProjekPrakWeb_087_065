@@ -2,6 +2,9 @@
 
 session_start();
 
+
+echo "Session ID: " . session_id();
+
 // Proteksi halaman dashboard
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
