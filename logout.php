@@ -5,8 +5,6 @@
  */
 
 require_once __DIR__ . '/config/koneksi.php';
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/functions.php';
 
 // Mulai session agar bisa di-destroy
 if (session_status() === PHP_SESSION_NONE) {
