@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id'])) {
 
     $destination = $_SESSION['role'] === 'admin'
         ? 'admin/dashboard.php'
-        : 'frontend/index.html';
+        : 'index.php';
 
     header('Location: ' . BASE_URL . '/' . $destination);
     exit;
@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Simpan informasi pengguna ke session
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['username'] = $row['nama'];
+                $_SESSION['nama'] = $row['nama'];
                 $_SESSION['email'] = $row['email'];
                 $_SESSION['role'] = $row['role'];
 
@@ -76,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Redirect sesuai role
                 $destination = $row['role'] === 'admin'
                     ? 'admin/dashboard.php'
-                    : 'frontend/index.html';
+                    : 'index.php';
 
                 header('Location: ' . BASE_URL . '/' . $destination);
                 exit;
