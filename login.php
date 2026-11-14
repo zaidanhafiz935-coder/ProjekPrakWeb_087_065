@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id'])) {
 
     $destination = $_SESSION['role'] === 'admin'
         ? 'admin/dashboard.php'
-        : 'frontend/index.html';
+        : 'index.php';
 
     header('Location: ' . BASE_URL . '/' . $destination);
     exit;
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Redirect sesuai role
                 $destination = $row['role'] === 'admin'
                     ? 'admin/dashboard.php'
-                    : 'frontend/index.html';
+                    : 'index.php';
 
                 header('Location: ' . BASE_URL . '/' . $destination);
                 exit;

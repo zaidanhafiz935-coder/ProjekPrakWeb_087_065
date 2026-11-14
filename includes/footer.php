@@ -73,7 +73,7 @@
       </div>
       <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
         <span class="text-footer-muted small">Dibangun oleh
-          <i class="bi bi-heart-fill text-danger mx-1"></i>
+          <i class="bi bi-tree mx-1"></i>
           Gilberto Silvana & Zinidine Zidan
         </span>
       </div>

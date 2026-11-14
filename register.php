@@ -9,7 +9,7 @@ require_once __DIR__ . '/config/koneksi.php';
 if (isset($_SESSION['user_id'])) {
     $halaman = $_SESSION['role'] === 'admin'
         ? 'admin/dashboard.php'
-        : 'frontend/index.html';
+        : 'index.html';
 
     header('Location: ' . BASE_URL . '/' . $halaman);
     exit;

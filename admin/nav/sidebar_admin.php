@@ -41,4 +41,5 @@ function sidebarActive(string $file, string $current): string {
       <i class="bi bi-box-arrow-right"></i> Logout
     </a>
   </nav>
+  
 </div>
