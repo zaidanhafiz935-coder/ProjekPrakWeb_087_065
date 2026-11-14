@@ -1,3 +1,4 @@
+// --- HAMBURGER MENU ---
 const tombolHamburger = document.getElementById('tombolHamburger');
 const menuLapor = document.getElementById('menuLapor');
 

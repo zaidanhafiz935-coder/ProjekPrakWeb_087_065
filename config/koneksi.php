@@ -20,7 +20,6 @@ $koneksi = new mysqli(
     DB_NAME
 );
 
-
 if ($koneksi->connect_error) {
     // Pada produksi, jangan tampilkan detail error ke pengguna
     error_log('Koneksi database gagal: ' . $koneksi->connect_error);
