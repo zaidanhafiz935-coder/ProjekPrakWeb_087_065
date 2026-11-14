@@ -3,57 +3,94 @@ session_start();
 
 require_once __DIR__ . "/config/koneksi.php";
 
+// Jika sudah login, arahkan ke halaman sesuai role
+if (isset($_SESSION['user_id'])) {
+
+    $destination = $_SESSION['role'] === 'admin'
+        ? 'admin/dashboard.php'
+        : 'frontend/index.html';
+
+    header('Location: ' . BASE_URL . '/' . $destination);
+    exit;
+}
+
 $error = "";
+$success = "";
 $email = "";
 
-// Jika form login dikirim
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Pesan setelah registrasi berhasil
+if (isset($_GET['register']) && $_GET['register'] === 'success') {
+    $success = "Registrasi berhasil! Silakan login.";
+}
 
+// Jika form login dikirim
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // Ambil input terlebih dahulu
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    // Cari akun berdasarkan email
-    $stmt = $koneksi->prepare(
-        "SELECT id, nama, email, password, role, status_akun FROM users WHERE email = ?"
-    );
+    // Validasi input
+    if (empty($email) || empty($password)) {
 
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
+        $error = "Email dan password wajib diisi!";
 
-    $result = $stmt->get_result();
+    } else {
 
-    if ($result->num_rows === 1) {
+        // Cari akun berdasarkan email
+        $stmt = $koneksi->prepare(
+            "SELECT id, nama, email, password, role, status_akun
+             FROM users
+             WHERE email = ?
+             LIMIT 1"
+        );
 
-        $row = $result->fetch_assoc();
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
 
-        if (
-            password_verify($password, $row['password']) &&
-            $row['status_akun'] === 'aktif' &&
-            in_array($row['role'], ['admin', 'warga'], true)
-        ) {
+        $result = $stmt->get_result();
 
-            session_regenerate_id(true);
+        if ($result->num_rows === 1) {
 
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['username'] = $row['nama'];
-            $_SESSION['email'] = $row['email'];
-            $_SESSION['role'] = $row['role'];
+            $row = $result->fetch_assoc();
 
-            $destination = $row['role'] === 'admin'
-                ? 'admin/dashboard.php'
-                : 'frontend/index.html';
-            header("Location: " . $destination);
-            exit;
+            // Validasi password, status, dan role
+            if (
+                password_verify($password, $row['password']) &&
+                $row['status_akun'] === 'aktif' &&
+                in_array($row['role'], ['admin', 'warga'], true)
+            ) {
+
+                // Regenerasi session ID setelah login
+                session_regenerate_id(true);
+
+                // Simpan informasi pengguna ke session
+                $_SESSION['user_id'] = $row['id'];
+                $_SESSION['username'] = $row['nama'];
+                $_SESSION['email'] = $row['email'];
+                $_SESSION['role'] = $row['role'];
+
+                // Catat aktivitas terakhir
+                $_SESSION['last_activity'] = time();
+
+                // Redirect sesuai role
+                $destination = $row['role'] === 'admin'
+                    ? 'admin/dashboard.php'
+                    : 'frontend/index.html';
+
+                header('Location: ' . BASE_URL . '/' . $destination);
+                exit;
+
+            } else {
+                $error = "Email atau password salah!";
+            }
 
         } else {
             $error = "Email atau password salah!";
         }
 
-    } else {
-        $error = "Email atau password salah!";
+        $stmt->close();
     }
-
-    $stmt->close();
 }
 ?>
 
@@ -71,6 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/style.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
@@ -81,9 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <!-- Brand -->
                 <div class="text-center mb-4">
-                    <a href="../index.php" class="text-decoration-none">
+                    <a href="<?= BASE_URL ?>/index.php" class="text-decoration-none">
                         <i class="bi bi-shield-check-fill fs-1 text-primary"></i>
-                        <h4 class="fw-bold text-primary mt-2">
+                        <h4 class="fw-bold text-primary-custom mt-1">
                             Siaga Masyarakat
                         </h4>
                     </a>
@@ -93,14 +131,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <!-- Login Card -->
-                <div class="card border-0 shadow">
-
-                    <div class="card-header bg-primary text-white py-3">
+                <div class="card card-custom border-0 shadow">
+                    <div class="card-header">
                         <i class="bi bi-box-arrow-in-right me-2"></i>
                         Masuk ke Akun
                     </div>
 
                     <div class="card-body p-4">
+                        <?php if ($success): ?>
+                            <div class="alert alert-success">
+                                <?= htmlspecialchars($success) ?>
+                            </div>
+                        <?php endif; ?>
 
                         <!-- Error Message -->
                         <?php if (!empty($error)): ?>
@@ -197,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <!-- Register Link -->
                     <div class="card-footer text-center text-muted small py-3">
                         Belum punya akun?
-                        <a href="register.php" class="text-primary fw-semibold text-decoration-none">
+                        <a href="register.php" class="text-primary-custom fw-semibold text-decoration-none">
                             Daftar sekarang
                         </a>
                     </div>
@@ -206,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <!-- Back to Home -->
                 <div class="text-center mt-3">
-                    <a href="../index.php" class="text-muted text-decoration-none small">
+                    <a href="<?= BASE_URL ?>/index.php" class="text-muted text-decoration-none small">
                         <i class="bi bi-arrow-left me-1"></i>
                         Kembali ke Beranda
                     </a>
