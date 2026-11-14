@@ -1,13 +1,20 @@
 <?php
-// 1. Hubungkan ke database
 require_once "config/koneksi.php";
 
-// 2. Query ke tabel laporan dan amankan dari error
-$query = mysqli_query($conn, "SELECT * FROM laporan ORDER BY id DESC");
-
+$query = mysqli_query($conn, "SELECT * FROM reports ORDER BY id DESC");
 if (!$query) {
     die("Query Error: " . mysqli_error($conn));
 }
+
+// Peta status -> kelas badge
+$badgeStatus = [
+    'menunggu'     => 'badge-menunggu',
+    'pending'      => 'badge-menunggu',
+    'diverifikasi' => 'badge-diverifikasi',
+    'diproses'     => 'badge-diproses',
+    'selesai'      => 'badge-selesai',
+    'ditolak'      => 'badge-ditolak',
+];
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -19,49 +26,62 @@ if (!$query) {
     <script src="assets/js/script.js" defer></script>
 </head>
 <body>
-  <nav class="navbar">
+
+<nav class="navbar">
     <div class="brand">
-        <img src="assets/images/logo.png" alt="logo" class="logo">
+        <img src="assets/images/logo.png" alt="Logo LaporPak" class="logo">
         <span class="brand-text">LaporPak</span>
     </div>
 
     <div class="nav-actions">
-        <!-- Tombol login yang berfungsi -->
-        <a href="login.php" class="tombol-login" style="text-decoration:none; display:inline-block;">Login</a>
-        
-        <button class="hamburger-menu" id="tombolHamburger">
+        <a href="login.php" class="tombol-login">Login</a>
+        <button class="hamburger-menu" id="tombolHamburger" aria-label="Buka menu" aria-expanded="false">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
         </button>
     </div>
+
     <ul class="isi-menu" id="menuLapor">
-        <li><a href="index.php">Beranda</a></li>
+        <li><a href="index.php" class="aktif">Beranda</a></li>
         <li><a href="#laporan">Daftar Laporan</a></li>
         <li><a href="#tentang">Tentang Kami</a></li>
     </ul>
 </nav>
 
-<!-- Tempat menampilkan data laporan secara berulang -->
-<main style="padding: 20px;">
-    <h2>Daftar Laporan</h2>
-    <?php 
-    if (mysqli_num_rows($query) > 0) {
-        // Looping data dilakukan di sini
-        while($data = mysqli_fetch_array($query)) { 
-    ?>
-            <div class="card-laporan" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 6px;">
-                <h3><?= htmlspecialchars($data['judul'] ?? 'Tanpa Judul'); ?></h3>
-                <p><?= htmlspecialchars($data['isi_laporan'] ?? ''); ?></p>
-                <small>Status: <?= htmlspecialchars($data['status'] ?? 'pending'); ?></small>
+<main class="konten">
+    <section id="laporan" class="bagian">
+        <h2 class="judul-bagian">Daftar Laporan</h2>
+
+        <?php if (mysqli_num_rows($query) > 0): ?>
+            <div class="grid-laporan">
+                <?php while ($data = mysqli_fetch_assoc($query)):
+                    $status = strtolower($data['status'] ?? 'pending');
+                    $kelas  = $badgeStatus[$status] ?? 'badge-menunggu';
+                ?>
+                    <article class="card-laporan">
+                        <div class="laporan-header">
+                            <h3 class="laporan-judul"><?= htmlspecialchars($data['judul'] ?? 'Tanpa Judul'); ?></h3>
+                            <span class="badge-status <?= $kelas; ?>"><?= htmlspecialchars(ucfirst($status)); ?></span>
+                        </div>
+                        <p class="laporan-isi"><?= nl2br(htmlspecialchars($data['isi_laporan'] ?? '')); ?></p>
+                    </article>
+                <?php endwhile; ?>
             </div>
-    <?php 
-        } 
-    } else {
-        echo "<p>Belum ada data laporan.</p>";
-    }
-    ?>
+        <?php else: ?>
+            <p class="teks-kosong">Belum ada data laporan.</p>
+        <?php endif; ?>
+    </section>
+
+    <section id="tentang" class="bagian">
+        <h2 class="judul-bagian">Tentang Kami</h2>
+        <p>Isi deskripsi singkat tentang LaporPak di sini.</p>
+    </section>
 </main>
+
+<footer class="footer">
+    <small>&copy; <?= date('Y'); ?> LaporPak</small>
+</footer>
 
 </body>
 </html>
