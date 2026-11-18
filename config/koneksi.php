@@ -11,6 +11,7 @@ define('BASE_URL', 'http://localhost/PROJECT/ProjekPrakWeb_087_065');
 
 // Upload configuration
 define('UPLOAD_REPORTS', __DIR__ . '/../uploads/reports/');
+define('UPLOAD_ACTS',    __DIR__ . '/../uploads/activities/');
 define('MAX_FILE_SIZE', 2 * 1024 * 1024);
 
 define('ALLOWED_IMG', [

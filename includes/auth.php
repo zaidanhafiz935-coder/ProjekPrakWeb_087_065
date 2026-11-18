@@ -103,6 +103,19 @@ function requireRole($role)
     }
 }
 
+function penggunaLogin()
+{
+    if (!sudahLogin()) {
+        return null;
+    }
+
+    return [
+        'id'    => $_SESSION['user_id'],
+        'nama'  => $_SESSION['username'] ?? 'Pengguna',
+        'email' => $_SESSION['email'] ?? '',
+        'role'  => $_SESSION['role'] ?? 'warga'
+    ];
+}
 
 // ======================================
 // HELPER FUNCTION
