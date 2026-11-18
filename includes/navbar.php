@@ -47,7 +47,7 @@
               <?php else: ?>
                 <li><a class="dropdown-item" href="<?= BASE_URL ?>/warga/dashboard.php">
                   <i class="bi bi-speedometer2 me-2"></i>Dashboard Saya</a></li>
-                <li><a class="dropdown-item" href="<?= BASE_URL ?>/warga/laporan.php">
+                <li><a class="dropdown-item" href="<?= BASE_URL ?>/warga/laporan_saya.php">
                   <i class="bi bi-file-text me-2"></i>Laporan Saya</a></li>
                 <li><a class="dropdown-item" href="<?= BASE_URL ?>/warga/kegiatan_saya.php">
                   <i class="bi bi-calendar-check me-2"></i>Kegiatan Saya</a></li>
