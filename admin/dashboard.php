@@ -2,16 +2,48 @@
 
 session_start();
 require_once __DIR__ . '/../config/koneksi.php';
-require_once __DIR__ . '/nav/navbar_admin.php';
-require_once __DIR__ . '/nav/sidebar_admin.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 
 // Dashboard hanya dapat diakses oleh admin yang sudah login.
-if (($_SESSION['role'] ?? null) !== 'admin') {
-    header('Location: ' . BASE_URL . '/logout.php');
-    exit;
-}
+requireRole('admin');
+
+// Ambil data admin
+$user = [
+    'nama' => $_SESSION['username'] ?? 'Administrator'
+];
+
+// Ambil statistik dashboard
+$stat = getStatistikLaporan($koneksi);
+
+// Ambil 5 laporan terbaru
+$queryLaporan = "
+    SELECT
+        r.id,
+        r.nomor_laporan,
+        r.judul,
+        r.status,
+        r.created_at,
+        c.nama_kategori,
+        u.nama AS pelapor
+
+    FROM reports r
+
+    INNER JOIN categories c
+        ON r.category_id = c.id
+
+    INNER JOIN users u
+        ON r.user_id = u.id
+
+    ORDER BY r.created_at DESC
+
+    LIMIT 5
+";
+
+$resultLaporan = $koneksi->query($queryLaporan);
+
+$laporanBaru = $resultLaporan->fetch_all(MYSQLI_ASSOC);
 
 ?>
 
@@ -26,56 +58,11 @@ if (($_SESSION['role'] ?? null) !== 'admin') {
   <link href="<?= BASE_URL ?>/assets/css/style.css" rel="stylesheet">
 </head>
 <body>
-
-<!-- Navbar Admin -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom shadow-sm sticky-top">
-  <div class="container-fluid px-3">
-    <button class="btn btn-link text-white me-2 d-lg-none p-0" id="btn-sidebar-toggle">
-      <i class="bi bi-list fs-4"></i>
-    </button>
-    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= BASE_URL ?>/admin/dashboard.php">
-      <i class="bi bi-shield-check-fill text-accent"></i>
-      <span class="fw-bold">Siaga Masyarakat</span>
-      <span class="badge bg-accent ms-1 small">Admin</span>
-    </a>
-    <div class="ms-auto d-flex align-items-center gap-2">
-      <div class="dropdown">
-        <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-          <i class="bi bi-person-circle me-1"></i><?= e($user['nama']) ?>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="<?= BASE_URL ?>/"><i class="bi bi-house me-2"></i>Lihat Website</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?>/logout.php">
-            <i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</nav>
+  <?php include __DIR__ . '/nav/navbar_admin.php'; ?>
 
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 <div class="dashboard-wrapper">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <i class="bi bi-speedometer2"></i> Panel Admin
-    </div>
-    <nav class="nav flex-column pt-2">
-      <a href="<?= BASE_URL ?>/admin/dashboard.php"  class="nav-link active"><i class="bi bi-house-door"></i> Dashboard</a>
-      <a href="<?= BASE_URL ?>/admin/laporan.php"     class="nav-link"><i class="bi bi-file-earmark-text"></i> Data Laporan</a>
-      <a href="<?= BASE_URL ?>/admin/kategori.php"    class="nav-link"><i class="bi bi-tags"></i> Kategori Laporan</a>
-      <a href="<?= BASE_URL ?>/admin/laporan.php?filter=riwayat" class="nav-link"><i class="bi bi-clock-history"></i> Tracking & Riwayat</a>
-      <a href="<?= BASE_URL ?>/admin/peta.php"        class="nav-link"><i class="bi bi-map"></i> Peta Laporan</a>
-      <a href="<?= BASE_URL ?>/admin/kegiatan.php"    class="nav-link"><i class="bi bi-calendar-event"></i> Kegiatan Sosial</a>
-      <a href="<?= BASE_URL ?>/admin/peserta.php"     class="nav-link"><i class="bi bi-person-badge"></i> Data Relawan</a>
-      <a href="<?= BASE_URL ?>/admin/pengguna.php"    class="nav-link"><i class="bi bi-people"></i> Data Pengguna</a>
-      <a href="<?= BASE_URL ?>/admin/statistik.php"   class="nav-link"><i class="bi bi-bar-chart-line"></i> Laporan Statistik</a>
-      <hr class="border-secondary mx-3 my-2">
-      <a href="<?= BASE_URL ?>/logout.php" class="nav-link text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
-    </nav>
-  </div>
+   <?php include __DIR__ . '/nav/sidebar_admin.php'; ?>
 
   <!-- KONTEN -->
   <div class="dashboard-content">
@@ -85,7 +72,7 @@ if (($_SESSION['role'] ?? null) !== 'admin') {
     <div class="d-flex align-items-center justify-content-between mb-4">
       <div>
         <h4 class="fw-bold mb-0">Dashboard Admin</h4>
-        <small class="text-muted">Selamat datang, <?= e($user['nama']) ?> — <?= date('l, d F Y') ?></small>
+        <small class="text-muted">Selamat datang, <?= e($_SESSION['username'] ?? 'Admin') ?> — <?= date('l, d F Y') ?></small>
       </div>
       <a href="<?= BASE_URL ?>/admin/laporan.php" class="btn btn-primary btn-sm">
         <i class="bi bi-file-earmark-text me-1"></i>Kelola Laporan
@@ -220,8 +207,10 @@ if (($_SESSION['role'] ?? null) !== 'admin') {
 
   </div><!-- /.dashboard-content -->
 </div><!-- /.dashboard-wrapper -->
-
+<!-- Script Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script Project -->
 <script src="<?= BASE_URL ?>/assets/js/script.js"></script>
 </body>
 </html>
