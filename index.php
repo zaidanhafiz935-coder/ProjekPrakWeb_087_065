@@ -7,6 +7,9 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/functions.php';
 
+// Ambil statistik ringkasan untuk hero section
+$stat = getStatistikLaporan($koneksi);
+
 // Ambil 6 laporan terbaru
 $laporanTerbaru = [];
 
