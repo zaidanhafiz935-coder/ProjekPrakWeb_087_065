@@ -20,9 +20,15 @@
         <li class="nav-item">
           <a class="nav-link" href="<?= BASE_URL ?>/"><i class="bi bi-house-door me-1"></i>Beranda</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="<?= BASE_URL ?>/warga/tambah_laporan.php"><i class="bi bi-plus-circle me-1"></i>Lapor Masalah</a>
-        </li>
+        <?php if (isAdmin()): ?>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= BASE_URL ?>/admin/laporan.php"><i class="bi bi-file-earmark-text me-1"></i>Kelola Laporan</a>
+          </li>
+        <?php else: ?>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= BASE_URL ?>/warga/tambah_laporan.php"><i class="bi bi-plus-circle me-1"></i>Lapor Masalah</a>
+          </li>
+        <?php endif; ?>
         <li class="nav-item">
           <a class="nav-link" href="<?= BASE_URL ?>/warga/peta.php"><i class="bi bi-map me-1"></i>Peta Laporan</a>
         </li>

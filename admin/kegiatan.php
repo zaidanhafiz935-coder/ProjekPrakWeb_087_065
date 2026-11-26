@@ -153,6 +153,7 @@ $csrfToken = buatCsrfToken();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kegiatan Sosial | Admin Siaga Masyarakat</title>
+  <link rel="icon" type="image/x-icon" href="<?= BASE_URL ?>/favicon.ico">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
@@ -288,7 +289,7 @@ $csrfToken = buatCsrfToken();
             </div>
             <div class="col-12">
               <label class="form-label">Lokasi</label>
-              <input type="text" name="lokasi" class="form-control"
+              <input type="text" name="lokasi" id="lokasi" class="form-control"
                      value="<?= e($_POST['lokasi'] ?? $keg['lokasi'] ?? '') ?>">
             </div>
             <div class="col-md-6">
@@ -316,7 +317,7 @@ $csrfToken = buatCsrfToken();
                        class="img-thumbnail" style="max-height:100px;" alt="Foto kegiatan">
                 </div>
               <?php endif; ?>
-              <input type="file" name="foto" class="form-control <?= isset($errors['foto']) ? 'is-invalid' : '' ?>"
+              <input type="file" name="foto" id="foto" class="form-control <?= isset($errors['foto']) ? 'is-invalid' : '' ?>"
                      accept=".jpg,.jpeg,.png,.webp">
               <?php if (isset($errors['foto'])): ?><div class="invalid-feedback"><?= e($errors['foto']) ?></div><?php endif; ?>
               <div id="preview-wrap" class="mt-2 d-none"><img id="preview-foto" src="" alt="Preview"></div>

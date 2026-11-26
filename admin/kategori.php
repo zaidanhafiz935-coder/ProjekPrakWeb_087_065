@@ -77,6 +77,7 @@ $csrfToken = buatCsrfToken();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kategori Laporan | Admin Siaga Masyarakat</title>
+  <link rel="icon" type="image/x-icon" href="<?= BASE_URL ?>/favicon.ico">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="<?= BASE_URL ?>/assets/css/style.css" rel="stylesheet">
@@ -148,13 +149,15 @@ $csrfToken = buatCsrfToken();
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-warning"
-                                onclick="editKategori(<?= $cat['id'] ?>, '<?= addslashes(e($cat['nama_kategori'])) ?>', '<?= addslashes(e($cat['deskripsi'] ?? '')) ?>')"
+                        <button class="btn btn-outline-warning btn-edit-kategori"
+                                data-id="<?= (int)$cat['id'] ?>"
+                                data-nama="<?= e($cat['nama_kategori']) ?>"
+                                data-deskripsi="<?= e($cat['deskripsi'] ?? '') ?>"
                                 title="Edit">
                           <i class="bi bi-pencil"></i>
                         </button>
                         <form method="POST" class="form-hapus d-inline"
-                              data-pesan="Hapus kategori '<?= addslashes($cat['nama_kategori']) ?>'?">
+                              data-pesan="Hapus kategori '<?= addslashes(e($cat['nama_kategori'])) ?>'?">
                           <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
                           <input type="hidden" name="action"   value="hapus">
                           <input type="hidden" name="hapus_id" value="<?= (int)$cat['id'] ?>">
@@ -209,12 +212,14 @@ $csrfToken = buatCsrfToken();
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/script.js"></script>
 <script>
-function editKategori(id, nama, desk) {
-  document.getElementById('edit_id').value   = id;
-  document.getElementById('edit_nama').value = nama;
-  document.getElementById('edit_desk').value = desk;
-  new bootstrap.Modal(document.getElementById('modalEdit')).show();
-}
+document.querySelectorAll('.btn-edit-kategori').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.getElementById('edit_id').value   = this.dataset.id;
+    document.getElementById('edit_nama').value = this.dataset.nama;
+    document.getElementById('edit_desk').value = this.dataset.deskripsi;
+    new bootstrap.Modal(document.getElementById('modalEdit')).show();
+  });
+});
 </script>
 </body>
 </html>

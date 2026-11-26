@@ -25,6 +25,17 @@ document.addEventListener('DOMContentLoaded', function () {
             overlay.classList.remove('show');
         });
     }
+
+    // Konfirmasi penghapusan data
+    document.addEventListener('submit', function (e) {
+        const formHapus = e.target.closest('.form-hapus');
+        if (formHapus) {
+            const pesan = formHapus.getAttribute('data-pesan') || 'Apakah Anda yakin ingin menghapus data ini?';
+            if (!confirm(pesan)) {
+                e.preventDefault();
+            }
+        }
+    });
 });
 
 // Preview foto sebelum diunggah
@@ -109,7 +120,7 @@ function initPetaLaporan(elementId, data) {
             const badgeColor = statusColors[item.status] || '#6c757d';
             const textColor = item.status === 'Menunggu' ? '#000' : '#fff';
             const fotoHtml = item.foto
-                ? `<img src="../uploads/${item.foto}" alt="Foto Laporan" style="width:100%;max-height:110px;object-fit:cover;border-radius:6px;margin-bottom:6px;" onerror="this.style.display='none'">`
+                ? `<img src="../uploads/reports/${item.foto}" alt="Foto Laporan" style="width:100%;max-height:110px;object-fit:cover;border-radius:6px;margin-bottom:6px;" onerror="this.style.display='none'">`
                 : '';
 
             const popupContent = `
@@ -121,6 +132,7 @@ function initPetaLaporan(elementId, data) {
                     </div>
                     <strong class="d-block mb-1">${item.judul}</strong>
                     <div class="text-muted small mb-1"><i class="bi bi-tag"></i> ${item.kategori}</div>
+                    ${item.pelapor ? `<div class="text-muted small mb-1"><i class="bi bi-person"></i> ${item.pelapor}</div>` : ''}
                     <div class="text-muted small mb-1"><i class="bi bi-geo-alt"></i> ${item.alamat_lokasi || '-'}</div>
                     <div class="text-muted" style="font-size:0.75rem;"><i class="bi bi-calendar"></i> ${item.tanggal}</div>
                 </div>

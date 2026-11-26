@@ -23,6 +23,11 @@ if (isset($_GET['register']) && $_GET['register'] === 'success') {
     $success = "Registrasi berhasil! Silakan login.";
 }
 
+// Pesan setelah session expired
+if (isset($_GET['pesan']) && $_GET['pesan'] === 'session_expired') {
+    $error = "Sesi Anda telah berakhir demi keamanan. Silakan login kembali.";
+}
+
 // Jika form login dikirim
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -55,32 +60,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $row = $result->fetch_assoc();
 
             // Validasi password, status, dan role
-            if (
-                password_verify($password, $row['password']) &&
-                $row['status_akun'] === 'aktif' &&
-                in_array($row['role'], ['admin', 'warga'], true)
-            ) {
+            if (password_verify($password, $row['password'])) {
+                if ($row['status_akun'] !== 'aktif') {
+                    $error = "Akun Anda dinonaktifkan oleh administrator. Silakan hubungi pengelola.";
+                } elseif (!in_array($row['role'], ['admin', 'warga'], true)) {
+                    $error = "Role akun tidak valid.";
+                } else {
+                    // Regenerasi session ID setelah login
+                    session_regenerate_id(true);
 
-                // Regenerasi session ID setelah login
-                session_regenerate_id(true);
+                    // Simpan informasi pengguna ke session
+                    $_SESSION['user_id'] = $row['id'];
+                    $_SESSION['username'] = $row['nama'];
+                    $_SESSION['email'] = $row['email'];
+                    $_SESSION['role'] = $row['role'];
 
-                // Simpan informasi pengguna ke session
-                $_SESSION['user_id'] = $row['id'];
-                $_SESSION['username'] = $row['nama'];
-                $_SESSION['email'] = $row['email'];
-                $_SESSION['role'] = $row['role'];
+                    // Catat aktivitas terakhir
+                    $_SESSION['last_activity'] = time();
 
-                // Catat aktivitas terakhir
-                $_SESSION['last_activity'] = time();
+                    // Redirect sesuai role
+                    $destination = $row['role'] === 'admin'
+                        ? 'admin/dashboard.php'
+                        : 'warga/dashboard.php';
 
-                // Redirect sesuai role
-                $destination = $row['role'] === 'admin'
-                    ? 'admin/dashboard.php'
-                    : 'warga/dashboard.php';
-
-                header('Location: ' . BASE_URL . '/' . $destination);
-                exit;
-
+                    header('Location: ' . BASE_URL . '/' . $destination);
+                    exit;
+                }
             } else {
                 $error = "Email atau password salah!";
             }
@@ -102,6 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Login | Siaga Masyarakat</title>
+    <link rel="icon" type="image/x-icon" href="<?= BASE_URL ?>/favicon.ico">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
