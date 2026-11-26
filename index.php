@@ -29,7 +29,7 @@ if ($res) {
 $kegiatanTerbaru = [];
 
 $res2 = $koneksi->query(
-    "SELECT id, nama_kegiatan, deskripsi, lokasi, tanggal, waktu, kuota, status,
+    "SELECT a.id, a.nama_kegiatan, a.deskripsi, a.foto, a.lokasi, a.tanggal, a.waktu, a.kuota, a.status,
             (SELECT COUNT(*) FROM activity_participants ap
              WHERE ap.activity_id = a.id
              AND ap.status_pendaftaran = 'Terdaftar') AS jml_peserta
@@ -49,6 +49,7 @@ if ($res2) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Siaga Masyarakat — Peduli Lingkungan, Bersama Membangun Masyarakat</title>
   <meta name="description" content="Platform digital pelaporan masalah lingkungan dan fasilitas umum.">
+  <link rel="icon" type="image/x-icon" href="<?= BASE_URL ?>/favicon.ico">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="<?= BASE_URL ?>/assets/css/style.css" rel="stylesheet">
@@ -285,9 +286,14 @@ if ($res2) {
         <?php foreach ($kegiatanTerbaru as $keg): ?>
         <div class="col-md-4">
           <div class="activity-card h-100">
-            <div class="card-img-placeholder">
-              <i class="bi bi-people-fill"></i>
-            </div>
+            <?php if (!empty($keg['foto'])): ?>
+              <img src="<?= BASE_URL ?>/uploads/activities/<?= e($keg['foto']) ?>"
+                   alt="<?= e($keg['nama_kegiatan']) ?>" class="card-img-top">
+            <?php else: ?>
+              <div class="card-img-placeholder">
+                <i class="bi bi-people-fill"></i>
+              </div>
+            <?php endif; ?>
             <div class="p-3">
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <span class="badge <?= badgeKegiatan($keg['status']) ?> badge-status">
